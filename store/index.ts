@@ -1,8 +1,10 @@
 import {
   configureStore, ThunkAction, Action, combineReducers,
 } from '@reduxjs/toolkit';
+import trackingSlice from './trackingSlice';
 
 const reducer = combineReducers({
+  trackingState: trackingSlice,
 });
 
 export const store = configureStore({
