@@ -28,7 +28,10 @@
         "UIBackgroundModes": [
           "location"
         ],
-        "NSLocationAlwaysAndWhenInUseUsageDescription":"App requires location even when the App is backgrounded."
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "App requires geolocation to improve the quality of the service",
+        "NSLocationAlwaysUsageDescription": "App requires geolocation to improve the quality of the service",
+        "NSLocationWhenInUseUsageDescription": "App requires geolocation to improve the quality of the service",
       }
     },
     "android": {
