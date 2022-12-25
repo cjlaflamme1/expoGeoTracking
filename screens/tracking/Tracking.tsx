@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Linking, StyleSheet, Text, View } from 'react-native';
 import * as Location from 'expo-location';
-import { LocationGeocodedAddress, LocationObject } from 'expo-location';
+import { LocationGeocodedAddress, LocationObject, LocationSubscription } from 'expo-location';
+import * as TaskManager from "expo-task-manager"
 import globalStyles from '../../styles/globalStyles';
 
 interface Props {}
@@ -11,6 +12,11 @@ const Tracking: React.FC<Props> = () => {
   const [background, requestBackground] = Location.useBackgroundPermissions();
   const [currentPosition, setCurrentPosition] = useState<LocationObject>();
   const [geocode, setGeocode] = useState<LocationGeocodedAddress[]>();
+  const [trackingForeground, setTrackingForeground] = useState(false);
+  const [trackingBackground, setTrackingBackground] = useState(false);
+  const [foregroundSubscription, setForegroundSubscription] = useState<LocationSubscription>(null);
+
+  const LOCATION_TASK_NAME = "background-location-task";
 
   const foregroundPress = async () => {
     const res = await requestForeground();
@@ -36,6 +42,62 @@ const Tracking: React.FC<Props> = () => {
     const currGeo = await Location.reverseGeocodeAsync(currPos.coords);
     setGeocode(currGeo);
   };
+
+  TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+    if (error) {
+      console.error(error)
+      return
+    }
+    if (data) {
+      // Extract location coordinates from data
+      // const { locations } = data;
+      // const location = locations[0]
+      // if (location) {
+      //   console.log("Location in background", location.coords)
+      // }
+      console.log(data);
+    }
+  })
+  const startTrackingBackground = async () => {
+    if (trackingBackground) {
+      const hasStarted = await Location.hasStartedLocationUpdatesAsync(
+        LOCATION_TASK_NAME
+      )
+      if (hasStarted) {
+        await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
+        console.log("Location tacking stopped")
+      }
+    } else {
+      setTrackingBackground(true);
+      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.High,
+        pausesUpdatesAutomatically: true,
+        activityType: Location.LocationActivityType.Fitness,
+        distanceInterval: 1,
+        timeInterval: 5000
+      })
+    }
+  }
+
+  const startTrackingForeground = async () => {
+    if (trackingForeground && foregroundSubscription) {
+      console.log('removing...');
+      foregroundSubscription.remove();
+      setTrackingForeground(false);
+      console.log('Tracking ended');
+      setForegroundSubscription(null);
+    } else {
+      const newLoc = await Location.watchPositionAsync({
+        accuracy: Location.Accuracy.High,
+        distanceInterval: 1,
+        timeInterval: 5000
+      }, (location) => {
+        console.log('new location:',location);
+      })
+      setForegroundSubscription(newLoc);
+      setTrackingForeground(true)
+    }
+  }
   return (
     <View style={globalStyles.container}>
       <Text>Tracking landing here</Text>
@@ -72,6 +134,14 @@ const Tracking: React.FC<Props> = () => {
           <Text>
             {geocode && JSON.stringify(geocode)}
           </Text>
+          <Button
+              title={trackingBackground ? "Stop Tracking Background" : "Start Tracking Background"}
+              onPress={startTrackingBackground}
+            />
+          <Button
+            title={trackingForeground ? "Stop Tracking Background" : "Start Tracking Foreground"}
+            onPress={startTrackingForeground}
+          />
         </View>
         <View style={globalStyles.block}>
           <Text>Background permission:</Text>

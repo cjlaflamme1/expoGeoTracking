@@ -31,18 +31,32 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationAlwaysAndWhenInUseUsageDescription": "App requires geolocation to improve the quality of the service",
         "NSLocationAlwaysUsageDescription": "App requires geolocation to improve the quality of the service",
-        "NSLocationWhenInUseUsageDescription": "App requires geolocation to improve the quality of the service",
-      }
+        "NSLocationWhenInUseUsageDescription": "App requires geolocation to improve the quality of the service"
+      },
+      "bundleIdentifier": "com.cjlaflamme1.expoGpsTest"
     },
     "android": {
+      "package": "com.cjlaflamme1.expoGpsTest",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "permissions":["ACCESS_COARSE_LOCATION","ACCESS_FINE_LOCATION","ACCESS_BACKGROUND_LOCATION"]
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.FOREGROUND_SERVICE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a58401c5-3844-409b-a427-82292b4a741b"
+      }
     }
   }
 }
