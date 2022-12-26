@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Linking, StyleSheet, Text, View } from 'react-native';
+import { Button, Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import * as Location from 'expo-location';
 import { LocationGeocodedAddress, LocationObject, LocationSubscription } from 'expo-location';
 import * as TaskManager from "expo-task-manager";
 import globalStyles from '../../styles/globalStyles';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { updateLocationLocal } from '../../store/trackingSlice';
+import * as SQLite from "expo-sqlite";
 
 interface LocationData {
   lat: string;
@@ -14,6 +15,23 @@ interface LocationData {
 }
 
 interface Props {}
+
+function openDatabase() {
+  if (Platform.OS === "web") {
+    return {
+      transaction: () => {
+        return {
+          executeSql: () => {},
+        };
+      },
+    };
+  }
+
+  const db = SQLite.openDatabase("db.db");
+  return db;
+}
+
+const db = openDatabase();
 
 const Tracking: React.FC<Props> = () => {
   const [foreground, requestForeground] = Location.useForegroundPermissions();
@@ -28,6 +46,14 @@ const Tracking: React.FC<Props> = () => {
     trackingState: state.trackingState,
   }));
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "create table if not exists activities (id integer primary key not null, activityDate datetime, locations text);"
+      );
+    });
+  }, []);
 
   const LOCATION_TASK_NAME = "background-location-task";
 
@@ -83,6 +109,15 @@ const Tracking: React.FC<Props> = () => {
         await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
         console.log("Location tacking stopped")
         setTrackingBackground(false);
+        db.transaction(
+          (tx) => {
+            tx.executeSql("insert into activities (activityDate, locations) values (?, ?)", [new Date().toString(), JSON.stringify(currentState.trackingState.allTracks)]);
+            tx.executeSql("select * from activities", [], (_, { rows }) =>
+              console.log(JSON.stringify(rows))
+            );
+          },
+          null
+        );
       }
     } else {
       setTrackingBackground(true);
