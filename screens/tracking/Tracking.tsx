@@ -7,6 +7,12 @@ import globalStyles from '../../styles/globalStyles';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { updateLocationLocal } from '../../store/trackingSlice';
 
+interface LocationData {
+  lat: string;
+  long: string;
+  coords: any;
+}
+
 interface Props {}
 
 const Tracking: React.FC<Props> = () => {
@@ -58,12 +64,13 @@ const Tracking: React.FC<Props> = () => {
     }
     if (data) {
       // Extract location coordinates from data
-      // const { locations } = data;
-      // const location = locations[0]
-      // if (location) {
-      //   console.log("Location in background", location.coords)
-      // }
-      dispatch(updateLocationLocal([data]));
+      const newLocs: LocationData[] = data["locations"];
+      const location = newLocs[0]
+      if (location) {
+        console.log("Location in background", location.coords)
+      }
+      const formerCoords = currentState.trackingState.allTracks;
+      dispatch(updateLocationLocal([...formerCoords, location]));
       console.log([data]);
     }
   });
