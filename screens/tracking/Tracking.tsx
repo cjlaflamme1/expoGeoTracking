@@ -75,6 +75,7 @@ const Tracking: React.FC<Props> = () => {
       if (hasStarted) {
         await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
         console.log("Location tacking stopped")
+        setTrackingBackground(false);
       }
     } else {
       setTrackingBackground(true);
