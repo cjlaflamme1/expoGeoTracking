@@ -17,8 +17,15 @@ const initialState: InitialState = {
 const trackingSlice = createSlice({
   name: 'tracking',
   initialState,
-  reducers: {},
+  reducers: {
+    updateLocationLocal(state, action: PayloadAction<any>) {
+      if (action) {
+        state.allTracks = action.payload;
+      }
+    }
+  },
   extraReducers: (builder) => {}
 })
 
+export const { updateLocationLocal } = trackingSlice.actions;
 export default trackingSlice.reducer;

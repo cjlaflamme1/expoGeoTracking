@@ -2,7 +2,7 @@
   "expo": {
     "name": "Expo GPS Test",
     "slug": "expoGpsTest",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,8 @@
       ]
     ],
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/a58401c5-3844-409b-a427-82292b4a741b"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -33,7 +34,7 @@
         "NSLocationAlwaysUsageDescription": "App requires geolocation to improve the quality of the service",
         "NSLocationWhenInUseUsageDescription": "App requires geolocation to improve the quality of the service"
       },
-      "bundleIdentifier": "com.cjlaflamme1.expoGpsTest"
+      "bundleIdentifier": "com.cjlaflamme1.expoGpsTest",
     },
     "android": {
       "package": "com.cjlaflamme1.expoGpsTest",
@@ -57,6 +58,9 @@
       "eas": {
         "projectId": "a58401c5-3844-409b-a427-82292b4a741b"
       }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }

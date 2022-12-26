@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button, Linking, StyleSheet, Text, View } from 'react-native';
 import * as Location from 'expo-location';
 import { LocationGeocodedAddress, LocationObject, LocationSubscription } from 'expo-location';
-import * as TaskManager from "expo-task-manager"
+import * as TaskManager from "expo-task-manager";
 import globalStyles from '../../styles/globalStyles';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { updateLocationLocal } from '../../store/trackingSlice';
 
 interface Props {}
 
@@ -15,6 +17,11 @@ const Tracking: React.FC<Props> = () => {
   const [trackingForeground, setTrackingForeground] = useState(false);
   const [trackingBackground, setTrackingBackground] = useState(false);
   const [foregroundSubscription, setForegroundSubscription] = useState<LocationSubscription>(null);
+
+  const currentState = useAppSelector((state) => ({
+    trackingState: state.trackingState,
+  }));
+  const dispatch = useAppDispatch();
 
   const LOCATION_TASK_NAME = "background-location-task";
 
@@ -43,7 +50,8 @@ const Tracking: React.FC<Props> = () => {
     setGeocode(currGeo);
   };
 
-  TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+  TaskManager.defineTask(LOCATION_TASK_NAME, async (response) => {
+    const { error, data } = response;
     if (error) {
       console.error(error)
       return
@@ -55,9 +63,10 @@ const Tracking: React.FC<Props> = () => {
       // if (location) {
       //   console.log("Location in background", location.coords)
       // }
-      console.log(data);
+      dispatch(updateLocationLocal([data]));
+      console.log([data]);
     }
-  })
+  });
   const startTrackingBackground = async () => {
     if (trackingBackground) {
       const hasStarted = await Location.hasStartedLocationUpdatesAsync(
